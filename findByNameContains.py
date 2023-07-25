@@ -10,6 +10,7 @@ user_name = os.environ["USER_NAME"]
 password = os.environ["PASSWORD"]
 rds_host = os.environ["RDS_HOST"]
 db_name = os.environ["DB_NAME"]
+rds_port = int(os.environ["RDS_PORT"])
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -18,6 +19,7 @@ logger.setLevel(logging.INFO)
 # re-used by subsequent function invocations.
 try:
     conn = pymysql.connect(
+        port=rds_port,
         host=rds_host,
         user=user_name,
         passwd=password,
@@ -47,17 +49,17 @@ def lambda_handler(message, context):
     # logger.info(type(body))
 
     name = body["name"]
+
     logger.info(name)
 
     item_count = 0
 
     with conn.cursor() as cursor:
-        #        #select name, price from catalog where name like '%iPod%';
-        ogsql = "SELECT 'name', 'price' FROM 'catalog' WHERE 'name'=%s"
-        sql = "SELECT 'name', 'price' FROM 'catalog' WHERE 'name' like %%s%"
-        mandysql = "SELECT name, price FROM catalog WHERE name LIKE '%" + name + "%'"
-        #cursor.execute(sql, ({name},))
-        cursor.execute(mandysql)
+
+        namewild = "%" + name + "%"        
+        cursor.execute("SELECT name, price FROM catalog WHERE name like %s", (namewild,))
+              
+        # print(cursor._executed)
 
         row_headers=[x[0] for x in cursor.description] #this will extract row headers
         rv = cursor.fetchall()
