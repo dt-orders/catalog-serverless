@@ -10,7 +10,10 @@ user_name = os.environ["USER_NAME"]
 password = os.environ["PASSWORD"]
 rds_host = os.environ["RDS_HOST"]
 db_name = os.environ["DB_NAME"]
-rds_port = int(os.environ["RDS_PORT"])
+# rds_port = int(os.environ["RDS_PORT"])
+
+rds_port = int(os.getenv('RDS_PORT', 3306))
+  
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
