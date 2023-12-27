@@ -1,3 +1,4 @@
+import shared_code.setup_otel_tracing
 import sys
 import logging
 import pymysql
@@ -8,9 +9,7 @@ from decimal import *
 import pathlib
 from dynatrace.opentelemetry.azure.functions import wrap_handler
 from opentelemetry.instrumentation.pymysql import PyMySQLInstrumentor
-#from opentelemetry.sdk._logs import LoggerProvider, LoggingHandler
-#from opentelemetry.sdk._logs.export import BatchLogRecordProcessor
-#from opentelemetry._logs import set_logger_provider
+
 
 @wrap_handler
 def main(req: func.HttpRequest) -> func.HttpResponse:
@@ -22,11 +21,11 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
     db_name = os.environ["DB_NAME"]
 
     logger = logging.getLogger()
-    logger.setLevel(logging.INFO)
+    #logger.setLevel(logging.INFO)
 
     #get current path for ssl cert
     current_path = pathlib.Path(__file__).parent.parent
-    print(current_path)
+    #print(current_path)
     ssl_cert_path = str(current_path /  'DigiCertGlobalRootCA.crt.pem')
 
     # create the database connection outside of the handler to allow connections to be
@@ -93,12 +92,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
                     row_data.append(str(data))
             json_data.append(dict(zip(row_headers,row_data)))
         output_json = (json.dumps(json_data))  
-
-    response = {
-        "statusCode": 200,
-        "headers": {},
-        "body": output_json
-    }
+   
 
     
     return func.HttpResponse(
