@@ -1,0 +1,5 @@
+pymysql > 1.0
+pathlib > 1.0
+opentelemetry-distro
+opentelemetry-exporter-otlp
+opentelemetry-instrumentation-pymysql
