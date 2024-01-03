@@ -8,6 +8,9 @@ from opentelemetry import trace
 import azure.functions as func
 from decimal import *
 import pathlib
+root_logger = logging.getLogger()
+for handler in root_logger.handlers[:]:
+    root_logger.removeHandler(handler)
 from dynatrace.opentelemetry.azure.functions import wrap_handler
 from opentelemetry.instrumentation.pymysql import PyMySQLInstrumentor
 
@@ -18,7 +21,7 @@ def main(req: func.HttpRequest, context: func.Context) -> func.HttpResponse:
     PyMySQLInstrumentor().instrument()
     current_span = trace.get_current_span()
     current_span.add_event("Python HTTP Trigger Function getDBContents Start")
-    logger = logging.getLogger()
+    logger = logging.getLogger(__name__)
     logger.info('Python HTTP trigger function getDBContents Start.')
     #get current path for ssl cert
     current_path = pathlib.Path(__file__).parent.parent
@@ -48,7 +51,8 @@ def main(req: func.HttpRequest, context: func.Context) -> func.HttpResponse:
         sys.exit()
 
 
-    logger.info("SUCCESS: Connection to RDS MySQL instance succeeded")
+    #logger.info("SUCCESS: Connection to RDS MySQL instance succeeded")
+    logger.warning("Success: Connection to MySQL instance!")
     #logger.info(cnx)
     # Show catalog table
     cursor = conn.cursor()
